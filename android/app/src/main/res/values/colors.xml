@@ -31,4 +31,5 @@
     <color name="ripple_color_dark">#1Affffff</color>
     <color name="ripple_color_selected_dark">#1A0A84FF</color>
     <color name="icon_background">#191919</color>
+    <color name="ic_launcher_background">#FFFFFF</color>
 </resources>

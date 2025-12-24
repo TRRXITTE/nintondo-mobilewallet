@@ -9,6 +9,8 @@
         <item name="android:windowLightStatusBar">true</item>
         <!-- App icon background color -->
         <item name="android:colorBackground">@color/icon_background</item>
+        <!-- Centered splash screen -->
+        <item name="android:windowBackground">@drawable/background_splash</item>
     </style>
     
     <!-- Widget text styles -->

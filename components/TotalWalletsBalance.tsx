@@ -40,7 +40,7 @@ const TotalWalletsBalance: React.FC = React.memo(() => {
         subactions: [
           {
             ...CommonToolTipActions.ViewInFiat,
-            text: loc.formatString(loc.total_balance_view.display_in_fiat, { currency: preferredFiatCurrency.endPointKey }),
+            text: loc.formatString(loc.total_balance_view.display_in_fiat, { currency: preferredFiatCurrency?.endPointKey || 'USD' }),
             hidden: totalBalancePreferredUnit === BitcoinUnit.LOCAL_CURRENCY,
           },
           { ...CommonToolTipActions.ViewInSats, hidden: totalBalancePreferredUnit === BitcoinUnit.SATS },

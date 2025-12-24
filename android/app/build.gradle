@@ -103,10 +103,26 @@ android {
         }
     }
 
+    flavorDimensions "react-native-capture-protection"
+    productFlavors {
+        fullMediaCapture {
+            dimension "react-native-capture-protection"
+        }
+    }
+    signingConfigs {
+        release {
+            storeFile file(System.getProperty("user.home") + "/.keystore")
+            storePassword "traaitt23258702"
+            keyAlias "googleplay"
+            keyPassword "traaitt23258702"
+        }
+    }
+
     buildTypes {
         release {
             // Caution! In production, you need to generate your own keystore file.
             // see https://reactnative.dev/docs/signed-apk-android.
+            signingConfig signingConfigs.release
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
             proguardFile "${rootProject.projectDir}/../node_modules/detox/android/detox/proguard-rules-app.pro"

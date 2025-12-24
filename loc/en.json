@@ -390,8 +390,8 @@
     "custom_fee_warning_description": "Fees below 1 sat/vB are valid, but may not be relayed due to node policies."
   },
   "wallets": {
-    "add_bitcoin": "Bitcoin",
-    "add_bitcoin_explain": "Simple and powerful Bitcoin wallet",
+    "add_bitcoin": "Nintondo Nyan",
+    "add_bitcoin_explain": "Simple and powerful Nintondo wallet",
     "add_create": "Create",
     "total_balance": "Total Balance",
     "add_entropy_reset_title": "Reset Entropy",
@@ -627,6 +627,7 @@
   },
   "units": {
     "BTC": "BTC",
+    "NINTONDO": "NINTONDO",
     "MAX": "Max",
     "sat_vbyte": "sat/vByte",
     "sats": "sats"

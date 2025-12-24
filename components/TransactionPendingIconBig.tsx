@@ -29,12 +29,12 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   ball: {
-    width: 150,
-    height: 150,
-    borderRadius: 75,
+    width: 120,
+    height: 120,
+    borderRadius: 60,
   },
   iconStyle: {
     left: 0,
-    top: 25,
+    top: 10,
   },
 });

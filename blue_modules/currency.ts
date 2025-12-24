@@ -64,6 +64,7 @@ async function setPreferredCurrency(item: FiatUnitType): Promise<void> {
 
 async function updateExchangeRate(): Promise<void> {
   if (skipUpdateExchangeRate) return;
+  if (!preferredFiatCurrency) return; // Don't attempt to update if currency is not set
   if (Date.now() - lastTimeUpdateExchangeRateWasCalled <= 10000) {
     // simple debounce so there's no race conditions
     return;
@@ -91,7 +92,7 @@ async function updateExchangeRate(): Promise<void> {
       await DefaultPreference.clear(EXCHANGE_RATES_STORAGE_KEY);
       exchangeRates = { LAST_UPDATED_ERROR: false };
     }
-  } catch (error) {
+  } catch (error: any) {
     try {
       await DefaultPreference.setName(GROUP_IO_BLUEWALLET);
       const ratesValue = await DefaultPreference.get(EXCHANGE_RATES_STORAGE_KEY);
@@ -269,6 +270,9 @@ async function initCurrencyDaemon(clearLastUpdatedTime: boolean = false): Promis
 }
 
 function satoshiToLocalCurrency(satoshi: number, format: boolean = true): string {
+  if (!preferredFiatCurrency) {
+    return '...'; // Currency not yet initialized
+  }
   const exchangeRateKey = BTC_PREFIX + preferredFiatCurrency.endPointKey;
   const exchangeRate = exchangeRates[exchangeRateKey];
 
@@ -326,8 +330,13 @@ async function mostRecentFetchedRate(): Promise<CurrencyRate> {
     }
 
     const rate = currencyInformation[BTC_PREFIX + preferredFiatCurrency.endPointKey];
+    const lastUpdatedValue = currencyInformation[LAST_UPDATED];
+    const lastUpdatedDate = lastUpdatedValue && typeof lastUpdatedValue === 'number' && !isNaN(lastUpdatedValue)
+      ? new Date(lastUpdatedValue)
+      : null;
+
     return {
-      LastUpdated: currencyInformation[LAST_UPDATED] ? new Date(currencyInformation[LAST_UPDATED]) : null,
+      LastUpdated: lastUpdatedDate,
       Rate: rate ? getCurrencyFormatter().format(rate) : '...',
     };
   } catch {
@@ -359,7 +368,7 @@ function fiatToBTC(fiatFloat: number): string {
 }
 
 function getCurrencySymbol(): string {
-  return preferredFiatCurrency.symbol;
+  return preferredFiatCurrency?.symbol || '$';
 }
 
 function formatBTC(btc: BigNumber.Value): string {

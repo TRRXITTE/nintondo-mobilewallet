@@ -105,7 +105,7 @@ export const TransactionListItem: React.FC<TransactionListItemProps> = memo(
       let sub = Number(item.confirmations) < 7 ? loc.formatString(loc.transactions.list_conf, { number: item.confirmations }) : '';
       if (sub !== '') sub += ' ';
       sub += txMemo;
-      if (item.memo) sub += item.memo;
+      if (item.memo && item.memo !== 'undefined') sub += item.memo;
       return sub || undefined;
     }, [txMemo, item.confirmations, item.memo]);
 
