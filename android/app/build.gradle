@@ -87,7 +87,7 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
-        versionName "7.2.4"
+        versionName "0.100.02"
         testBuildType System.getProperty('testBuildType', 'debug')
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
@@ -109,6 +109,7 @@ android {
             dimension "react-native-capture-protection"
         }
     }
+
     signingConfigs {
         release {
             storeFile file(System.getProperty("user.home") + "/.keystore")
