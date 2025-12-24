@@ -545,6 +545,28 @@ export const removeAllDeliveredNotifications = () => {
   PushNotification.removeAllDeliveredNotifications();
 };
 
+/**
+ * Shows a local notification for incoming payments
+ * @param title {string} Notification title
+ * @param message {string} Notification message
+ * @param data {object} Additional data to pass with the notification
+ */
+export const showLocalNotification = (title: string, message: string, data?: any) => {
+  PushNotification.localNotification({
+    channelId: 'default-channel-id', // required for Android
+    title,
+    message,
+    playSound: true,
+    soundName: 'default',
+    importance: 'high',
+    vibrate: true,
+    vibration: 300,
+    priority: 'high',
+    visibility: 'public',
+    userInfo: data || {},
+  });
+};
+
 export const getDefaultUri = () => {
   return groundControlUri;
 };

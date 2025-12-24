@@ -11,6 +11,7 @@ import {
   initializeNotifications,
   removeAllDeliveredNotifications,
   setApplicationIconBadgeNumber,
+  showLocalNotification,
 } from '../blue_modules/notifications';
 import { LightningCustodianWallet } from '../class';
 import DeeplinkSchemaMatch from '../class/deeplink-schema-match';
@@ -100,6 +101,22 @@ const useCompanionListeners = (skipIfNotInitialized = true) => {
         if (wallet) {
           const walletID = wallet.getID();
           fetchAndSaveWalletTransactions(walletID);
+
+          // Show local notification for incoming payment
+          if (!wasTapped && payload.message) {
+            const notificationTitle = payload.type === 2 || payload.type === 3
+              ? loc.notifications.new_payment_received
+              : loc.notifications.transaction_confirmed;
+            const notificationMessage = typeof payload.message === 'string' ? payload.message : String(payload.message);
+
+            showLocalNotification(notificationTitle, notificationMessage, {
+              walletID,
+              address: payload.address,
+              txid: payload.txid,
+              type: payload.type,
+            });
+          }
+
           if (wasTapped) {
             if (payload.type !== 3 || wallet.chain === Chain.OFFCHAIN) {
               navigation.navigate('WalletTransactions', {
@@ -140,6 +157,22 @@ const useCompanionListeners = (skipIfNotInitialized = true) => {
           if (wallet) {
             const walletID = wallet.getID();
             fetchAndSaveWalletTransactions(walletID);
+
+            // Show local notification for incoming payment
+            if (!wasTapped && payload.message) {
+              const notificationTitle = payload.type === 2 || payload.type === 3
+                ? loc.notifications.new_payment_received
+                : loc.notifications.transaction_confirmed;
+              const notificationMessage = typeof payload.message === 'string' ? payload.message : String(payload.message);
+
+              showLocalNotification(notificationTitle, notificationMessage, {
+                walletID,
+                address: payload.address,
+                txid: payload.txid,
+                type: payload.type,
+              });
+            }
+
             if (wasTapped) {
               if (payload.type !== 3 || wallet.chain === Chain.OFFCHAIN) {
                 navigationRef.dispatch(

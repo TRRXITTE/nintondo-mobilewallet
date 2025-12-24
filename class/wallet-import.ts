@@ -414,6 +414,17 @@ const startImport = (
       }
     }
 
+    // electrum p2pkh (Legacy) - now default
+    yield { progress: 'electrum p2pkh' };
+    const el2 = new HDLegacyElectrumSeedP2PKHWallet();
+    el2.setSecret(text);
+    if (password) {
+      el2.setPassphrase(password);
+    }
+    if (el2.validateMnemonic()) {
+      yield { wallet: el2 }; // not fetching txs or balances, fuck it, yolo, life is too short
+    }
+
     // electrum p2wpkh-p2sh
     yield { progress: 'electrum p2wpkh-p2sh' };
     const el1 = new HDSegwitElectrumSeedP2WPKHWallet();
@@ -423,17 +434,6 @@ const startImport = (
     }
     if (el1.validateMnemonic()) {
       yield { wallet: el1 }; // not fetching txs or balances, fuck it, yolo, life is too short
-    }
-
-    // electrum p2wpkh-p2sh
-    yield { progress: 'electrum p2pkh' };
-    const el2 = new HDLegacyElectrumSeedP2PKHWallet();
-    el2.setSecret(text);
-    if (password) {
-      el2.setPassphrase(password);
-    }
-    if (el2.validateMnemonic()) {
-      yield { wallet: el2 }; // not fetching txs or balances, fuck it, yolo, life is too short
     }
 
     // is it AEZEED?
