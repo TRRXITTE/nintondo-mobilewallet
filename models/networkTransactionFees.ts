@@ -14,7 +14,7 @@ export class NetworkTransactionFee {
   public mediumFee: number;
   public slowFee: number;
 
-  constructor(fastestFee = 2, mediumFee = 1, slowFee = 1) {
+  constructor(fastestFee = 340, mediumFee = 170, slowFee = 100) {
     this.fastestFee = fastestFee;
     this.mediumFee = mediumFee;
     this.slowFee = slowFee;
@@ -29,14 +29,19 @@ export default class NetworkTransactionFees {
         throw new Error('Electrum is disabled. Dont attempt to fetch fees');
       }
       const response = await BlueElectrum.estimateFees();
-      if (response.fast === response.medium) {
-        // exception, if fees are equal lets bump priority fee + 1 so actual priority tx is above the rest
-        return new NetworkTransactionFee(response.fast + 1, response.medium, response.slow);
+      // Ensure minimum values for Dogecoin compatibility
+      const fast = Math.max(response.fast, 340);
+      const medium = Math.max(response.medium, 170);
+      const slow = Math.max(response.slow, 100);
+      
+      if (fast === medium) {
+        // exception, if fees are equal lets bump priority fee slightly so actual priority tx is above the rest
+        return new NetworkTransactionFee(fast + 10, medium, slow);
       }
-      return new NetworkTransactionFee(response.fast, response.medium, response.slow);
+      return new NetworkTransactionFee(fast, medium, slow);
     } catch (err) {
       console.warn(err);
-      return new NetworkTransactionFee(2, 1, 1);
+      return new NetworkTransactionFee(340, 170, 100);
     }
   }
 }

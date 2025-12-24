@@ -29,12 +29,16 @@ class ElectrumClient {
         
         // Default list of Electrum servers to try
         val hardcodedPeers = listOf(
-            ElectrumServer("electrum1.bluewallet.io", 50001, false),
-            ElectrumServer("electrum2.bluewallet.io", 50001, false),
-            ElectrumServer("electrum3.bluewallet.io", 50001, false),
-            ElectrumServer("electrum1.bluewallet.io", 443, true),
-            ElectrumServer("electrum2.bluewallet.io", 443, true),
-            ElectrumServer("electrum3.bluewallet.io", 443, true)
+            ElectrumServer("x.cdns.trrxitte.com", 50001, false),
+            ElectrumServer("x.cdns.trrxitte.com", 50002, true),
+            ElectrumServer("en.nintondo.trrxitte.com", 50001, false),
+            ElectrumServer("en.nintondo.trrxitte.com", 50002, true),
+            ElectrumServer("eu.nintondo.trrxitte.com", 50001, false),
+            ElectrumServer("eu.nintondo.trrxitte.com", 50002, true),
+            ElectrumServer("us.nintondo.trrxitte.com", 50001, false),
+            ElectrumServer("us.nintondo.trrxitte.com", 50002, true),
+            ElectrumServer("127.0.0.1", 50001, false),
+            ElectrumServer("127.0.0.1", 50002, true)
         )
     }
 
@@ -194,7 +198,7 @@ class ElectrumClient {
             inputReader = BufferedReader(InputStreamReader(socket?.getInputStream()))
 
             // Testing the connection with simple version request
-            val versionRequest = "{\"id\": 0, \"method\": \"server.version\", \"params\": [\"BlueWallet\", \"1.4\"]}\n"
+            val versionRequest = "{\"id\": 0, \"method\": \"server.version\", \"params\": [\"Nintondo OSX\", \"1.4\"]}\n"
             Log.d(TAG, "Sending version request to verify connection")
             send(versionRequest.toByteArray())
 

@@ -1,11 +1,13 @@
-# BlueWallet - A Bitcoin & Lightning Wallet
+# Nintondo OSX - A NINTONDO Wallet
+
+> Forked from BlueWallet for the Nintondo network (Dogecoin-based, ElectrumX compatible). Network parameters and default Electrum peer now point to `x.cdns.trrxitte.com` (TCP 50001 / SSL 50002). Adjust `blue_modules/nintondoNetwork.ts` if you run your own server.
 
 [![GitHub tag](https://img.shields.io/badge/dynamic/json.svg?url=https://raw.githubusercontent.com/BlueWallet/BlueWallet/master/package.json&query=$.version&label=Version)](https://github.com/BlueWallet/BlueWallet)
 [![CircleCI](https://circleci.com/gh/BlueWallet/BlueWallet.svg?style=svg)](https://circleci.com/gh/BlueWallet/BlueWallet)
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 ![](https://img.shields.io/github/license/BlueWallet/BlueWallet.svg)
 
-Thin Bitcoin Wallet.
+Thin NINTONDO Wallet.
 Built with React Native and Electrum.
 
 [![Appstore](https://bluewallet.io/uploads/app-store-badge-blue.svg)](https://itunes.apple.com/us/app/bluewallet-bitcoin-wallet/id1376878040?l=ru&ls=1&mt=8)

@@ -1,12 +1,15 @@
 import './gesture-handler';
 import 'react-native-get-random-values';
 import './shim.js';
+import { applyNintondoNetwork } from './blue_modules/nintondoNetwork';
 
 import React, { useEffect } from 'react';
 import { AppRegistry, LogBox } from 'react-native';
 
 import App from './App';
 import { restoreSavedPreferredFiatCurrencyAndExchangeFromStorage } from './blue_modules/currency';
+
+applyNintondoNetwork();
 
 if (!Error.captureStackTrace) {
   // captureStackTrace is only available when debugging
@@ -28,4 +31,4 @@ const BlueAppComponent = () => {
   return <App />;
 };
 
-AppRegistry.registerComponent('BlueWallet', () => BlueAppComponent);
+AppRegistry.registerComponent('NintondoOSX', () => BlueAppComponent);

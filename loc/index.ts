@@ -308,7 +308,13 @@ export const removeTrailingZeros = (value: number | string): string => {
   while ((ret.slice(-1) === '0' || ret.slice(-1) === '.') && ret.indexOf('.') !== -1) {
     ret = ret.substr(0, ret.length - 1);
   }
-  return ret;
+  // Handle edge case where result is empty string (e.g., "0.00" becomes "")
+  return ret === '' ? '0' : ret;
+};
+
+const resolveUnitLabel = (unit: string): string => {
+  const units = loc.units as Record<string, string>;
+  return units?.[unit] ?? unit;
 };
 
 /**
@@ -320,13 +326,13 @@ export const removeTrailingZeros = (value: number | string): string => {
  */
 export function formatBalance(balance: number, toUnit: string, withFormatting = false): string {
   if (toUnit === undefined) {
-    return balance + ' ' + loc.units[BitcoinUnit.BTC];
+    return balance + ' ' + resolveUnitLabel(BitcoinUnit.BTC);
   }
   if (toUnit === BitcoinUnit.BTC) {
-    const value = new BigNumber(balance).dividedBy(100000000).toFixed(8);
-    return removeTrailingZeros(value) + ' ' + loc.units[BitcoinUnit.BTC];
+    const value = new BigNumber(balance).dividedBy(100000000).toFixed(2);
+    return removeTrailingZeros(value) + ' ' + resolveUnitLabel(toUnit);
   } else if (toUnit === BitcoinUnit.SATS) {
-    return (withFormatting ? new Intl.NumberFormat().format(balance).toString() : String(balance)) + ' ' + loc.units[BitcoinUnit.SATS];
+    return (withFormatting ? new Intl.NumberFormat().format(balance).toString() : String(balance)) + ' ' + resolveUnitLabel(toUnit);
   } else {
     return satoshiToLocalCurrency(balance);
   }
@@ -344,7 +350,7 @@ export function formatBalanceWithoutSuffix(balance = 0, toUnit: string, withForm
     return balance;
   }
   if (toUnit === BitcoinUnit.BTC) {
-    const value = new BigNumber(balance).dividedBy(100000000).toFixed(8);
+    const value = new BigNumber(balance).dividedBy(100000000).toFixed(2);
     return removeTrailingZeros(value);
   } else if (toUnit === BitcoinUnit.SATS) {
     return withFormatting ? new Intl.NumberFormat().format(balance).toString() : String(balance);

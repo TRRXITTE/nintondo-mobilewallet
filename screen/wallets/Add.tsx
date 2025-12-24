@@ -15,7 +15,7 @@ import assert from 'assert';
 
 import triggerHapticFeedback, { HapticFeedbackTypes } from '../../blue_modules/hapticFeedback';
 import { BlueButtonLink, BlueFormLabel, BlueText } from '../../BlueComponents';
-import { HDSegwitBech32Wallet, HDTaprootWallet, LightningCustodianWallet, HDLegacyP2PKHWallet } from '../../class';
+import { HDLegacyP2PKHWallet, LightningCustodianWallet } from '../../class';
 import presentAlert from '../../components/Alert';
 import Button from '../../components/Button';
 import { useTheme } from '../../components/themes';
@@ -41,7 +41,6 @@ enum ButtonSelected {
   ONCHAIN = Chain.ONCHAIN,
   // @ts-ignore: Return later to update
   OFFCHAIN = Chain.OFFCHAIN,
-  VAULT = 'VAULT',
   ARK = 'ARK',
 }
 
@@ -68,15 +67,8 @@ interface TAction {
 }
 
 const index2walletType: Record<number, { text: string; subtitle: string; walletType: string }> = {
-  0: { subtitle: 'p2wpkh/HD', text: `${loc.multisig.native_segwit_title}`, walletType: HDSegwitBech32Wallet.type },
-  1: { subtitle: 'p2pkh/HD', text: `${loc.multisig.legacy_title}`, walletType: HDLegacyP2PKHWallet.type },
-  2: { subtitle: 'p2tr/HD', text: 'Taproot', walletType: HDTaprootWallet.type },
-  3: {
-    // lightning
-    subtitle: LightningCustodianWallet.subtitleReadable,
-    text: LightningCustodianWallet.typeReadable,
-    walletType: LightningCustodianWallet.type,
-  },
+  0: { subtitle: 'p2pkh/HD', text: `${loc.multisig.legacy_title}`, walletType: HDLegacyP2PKHWallet.type },
+  // Lightning removed - NINTONDO uses Legacy only
 };
 
 const initialState: State = {
@@ -192,26 +184,9 @@ const WalletsAdd: React.FC = () => {
         id: index2walletType[0].walletType,
         text: index2walletType[0].text,
         subtitle: index2walletType[0].subtitle,
-        menuState: selectedIndex === 0 && selectedWalletType === ButtonSelected.ONCHAIN,
+        menuState: true, // Only Legacy wallet supported
       },
-      {
-        id: index2walletType[1].walletType,
-        text: index2walletType[1].text,
-        subtitle: index2walletType[1].subtitle,
-        menuState: selectedIndex === 1 && selectedWalletType === ButtonSelected.ONCHAIN,
-      },
-      {
-        id: index2walletType[2].walletType,
-        text: index2walletType[2].text,
-        subtitle: index2walletType[2].subtitle,
-        menuState: selectedIndex === 2 && selectedWalletType === ButtonSelected.ONCHAIN,
-      },
-      {
-        id: index2walletType[3].walletType,
-        text: index2walletType[3].text,
-        subtitle: index2walletType[3].subtitle,
-        menuState: selectedWalletType === ButtonSelected.OFFCHAIN,
-      },
+      // Removed: Lightning, SegWit, and Taproot options
     ];
 
     const walletAction: Action = {
@@ -250,9 +225,7 @@ const WalletsAdd: React.FC = () => {
     confirmResetEntropy(ButtonSelected.ARK);
   }, [confirmResetEntropy]);
 
-  const handleOnLightningButtonPressed = useCallback(() => {
-    confirmResetEntropy(ButtonSelected.OFFCHAIN);
-  }, [confirmResetEntropy]);
+  // Lightning removed for NINTONDO
 
   const HeaderRight = useMemo(
     () => (
@@ -260,9 +233,7 @@ const WalletsAdd: React.FC = () => {
         onPressMenuItem={(id: string) => {
           LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
 
-          if (id === LightningCustodianWallet.type) {
-            handleOnLightningButtonPressed();
-          } else if (id === '12_words') {
+          if (id === '12_words') {
             navigate('ProvideEntropy', { words: 12, entropy: entropy ? uint8ArrayToHex(entropy) : undefined });
           } else if (id === '24_words') {
             navigate('ProvideEntropy', { words: 24, entropy: entropy ? uint8ArrayToHex(entropy) : undefined });
@@ -281,7 +252,7 @@ const WalletsAdd: React.FC = () => {
         actions={toolTipActions}
       />
     ),
-    [handleOnLightningButtonPressed, toolTipActions, entropy, confirmResetEntropy, navigate],
+    [toolTipActions, entropy, confirmResetEntropy, navigate],
   );
 
   useEffect(() => {
@@ -292,10 +263,8 @@ const WalletsAdd: React.FC = () => {
   }, [HeaderRight, colorScheme, colors.foregroundColor, setOptions, toolTipActions]);
 
   useEffect(() => {
-    getLNDHub()
-      .then(url => (url ? setWalletBaseURI(url) : setWalletBaseURI('')))
-      .catch(() => setWalletBaseURI(''))
-      .finally(() => setIsLoading(false));
+    // Lightning removed - just set loading to false
+    setIsLoading(false);
   }, []);
 
   const setIsLoading = (value: boolean) => {
@@ -321,33 +290,10 @@ const WalletsAdd: React.FC = () => {
   const createWallet = async () => {
     setIsLoading(true);
 
-    if (selectedWalletType === ButtonSelected.OFFCHAIN) {
-      createLightningWallet();
-    } else if (selectedWalletType === ButtonSelected.ARK) {
-      createLightningArkWallet();
-    } else if (selectedWalletType === ButtonSelected.ONCHAIN) {
-      let w: HDSegwitBech32Wallet | HDLegacyP2PKHWallet | HDTaprootWallet;
-
-      for (let c = 0; c < Object.values(index2walletType).length; c++) {
-        if (c === selectedIndex) {
-          switch (index2walletType[c].walletType) {
-            case HDTaprootWallet.type:
-              w = new HDTaprootWallet();
-              w.setLabel(label || loc.wallets.details_title);
-              break;
-            case HDLegacyP2PKHWallet.type:
-              w = new HDLegacyP2PKHWallet();
-              w.setLabel(label || loc.wallets.details_title);
-              break;
-            case HDSegwitBech32Wallet.type:
-              w = new HDSegwitBech32Wallet();
-              w.setLabel(label || loc.wallets.details_title);
-              break;
-          }
-        }
-      }
-
-      assert(w!, 'Internal error: could not decide which wallet to create');
+    if (selectedWalletType === ButtonSelected.ONCHAIN) {
+      // NINTONDO: Only Legacy (P2PKH) wallets supported
+      const w = new HDLegacyP2PKHWallet();
+      w.setLabel(label || loc.wallets.details_title);
 
       if (selectedWalletType === ButtonSelected.ONCHAIN) {
         if (entropy) {
@@ -365,7 +311,7 @@ const WalletsAdd: React.FC = () => {
         await saveToDisk();
 
         triggerHapticFeedback(HapticFeedbackTypes.NotificationSuccess);
-        if (w.type === HDLegacyP2PKHWallet.type || w.type === HDSegwitBech32Wallet.type || w.type === HDTaprootWallet.type) {
+        if (w.type === HDLegacyP2PKHWallet.type) {
           navigate('PleaseBackup', {
             walletID: w.getID(),
           });
@@ -373,77 +319,13 @@ const WalletsAdd: React.FC = () => {
           goBack();
         }
       }
-    } else if (selectedWalletType === ButtonSelected.VAULT) {
-      setIsLoading(false);
-      navigate('WalletsAddMultisig', { walletLabel: label.trim().length > 0 ? label : loc.multisig.default_label });
     }
   };
 
-  const createLightningWallet = async () => {
-    const wallet = new LightningCustodianWallet();
-    wallet.setLabel(label || loc.wallets.details_title);
-
-    try {
-      const lndhub = walletBaseURI?.trim();
-      if (lndhub) {
-        const isValidNodeAddress = await LightningCustodianWallet.isValidNodeAddress(lndhub);
-        if (isValidNodeAddress) {
-          wallet.setBaseURI(lndhub);
-          await wallet.init();
-        } else {
-          throw new Error('The provided node address is not valid LNDHub node.');
-        }
-      }
-      await wallet.createAccount();
-      await wallet.authorize();
-    } catch (Err: any) {
-      setIsLoading(false);
-      console.warn('lnd create failure', Err);
-      if (Err.message) {
-        return presentAlert({ message: Err.message });
-      } else {
-        return presentAlert({ message: loc.wallets.add_lndhub_error });
-      }
-      // giving app, not adding anything
-    }
-
-    await wallet.generate();
-    addWallet(wallet);
-    await saveToDisk();
-
-    triggerHapticFeedback(HapticFeedbackTypes.NotificationSuccess);
-    navigate('PleaseBackupLNDHub', {
-      walletID: wallet.getID(),
-    });
-  };
-
-  const createLightningArkWallet = async () => {
-    const wallet = new LightningArkWallet();
-    wallet.setLabel(label || loc.wallets.details_title);
-    try {
-      await wallet.generate();
-    } catch (Err: any) {
-      setIsLoading(false);
-      console.warn('lightning ark create failure', Err);
-      return presentAlert({ message: Err.message ?? '' });
-    }
-
-    addWallet(wallet);
-    await saveToDisk();
-
-    triggerHapticFeedback(HapticFeedbackTypes.NotificationSuccess);
-    navigate('PleaseBackupLNDHub', {
-      walletID: wallet.getID(),
-    });
-  };
+  // Lightning wallet creation removed for NINTONDO
 
   const navigateToImportWallet = () => {
     navigate('ImportWallet');
-  };
-
-  const handleOnVaultButtonPressed = () => {
-    Keyboard.dismiss();
-    confirmResetEntropy(ButtonSelected.VAULT);
   };
 
   const handleOnBitcoinButtonPressed = () => {
@@ -457,18 +339,7 @@ const WalletsAdd: React.FC = () => {
     Linking.openURL('https://bluewallet.io/lightning/');
   };
 
-  const LightningButtonMemo = useMemo(
-    () => (
-      <WalletButton
-        buttonType="Lightning"
-        testID="ActivateLightningButton"
-        active={selectedWalletType === ButtonSelected.OFFCHAIN}
-        onPress={handleOnLightningButtonPressed}
-        size={styles.button}
-      />
-    ),
-    [selectedWalletType, handleOnLightningButtonPressed],
-  );
+  // Lightning button removed for NINTONDO
 
   return (
     <SafeAreaScrollView
@@ -502,51 +373,10 @@ const WalletsAdd: React.FC = () => {
           onPress={handleOnBitcoinButtonPressed}
           size={styles.button}
         />
-        <WalletButton
-          buttonType="Vault"
-          testID="ActivateVaultButton"
-          active={selectedWalletType === ButtonSelected.VAULT}
-          onPress={handleOnVaultButtonPressed}
-          size={styles.button}
-        />
-        {backdoorPressed >= 20 ? (
-          <WalletButton
-            buttonType="LightningArk"
-            testID="ActivateLightningArkButton"
-            active={selectedWalletType === ButtonSelected.ARK}
-            onPress={handleOnLightningArkButtonPressed}
-            size={styles.button}
-          />
-        ) : null}
-        {selectedWalletType === ButtonSelected.OFFCHAIN && LightningButtonMemo}
+        {/* Lightning and Lightning Ark removed for NINTONDO */}
       </View>
       <View style={styles.advanced}>
-        {selectedWalletType === ButtonSelected.OFFCHAIN && (
-          <>
-            <BlueSpacing20 />
-            <View style={styles.lndhubTitle}>
-              <BlueText>{loc.wallets.add_lndhub}</BlueText>
-              <BlueButtonLink title={loc.wallets.learn_more} onPress={onLearnMorePressed} />
-            </View>
-
-            <View style={[styles.lndUri, stylesHook.lndUri]}>
-              <TextInput
-                value={walletBaseURI}
-                onChangeText={setWalletBaseURI}
-                onSubmitEditing={Keyboard.dismiss}
-                placeholder={loc.wallets.add_lndhub_placeholder}
-                clearButtonMode="while-editing"
-                autoCapitalize="none"
-                textContentType="URL"
-                autoCorrect={false}
-                placeholderTextColor="#81868e"
-                style={styles.textInputCommon}
-                editable={!isLoading}
-                underlineColorAndroid="transparent"
-              />
-            </View>
-          </>
-        )}
+        {/* LNDHub settings removed for NINTONDO */}
 
         <BlueSpacing20 />
         {!isLoading ? (

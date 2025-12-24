@@ -1,6 +1,9 @@
 /* global jest */
 
 import mockClipboard from '@react-native-clipboard/clipboard/jest/clipboard-mock.js';
+import { applyNintondoNetwork } from '../blue_modules/nintondoNetwork';
+
+applyNintondoNetwork();
 
 const consoleWarnOrig = console.warn;
 console.warn = (...args) => {

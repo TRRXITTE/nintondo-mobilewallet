@@ -2,6 +2,7 @@ import assert from 'assert';
 import * as bitcoin from 'bitcoinjs-lib';
 import ElectrumClient from 'electrum-client';
 import { sha256 as _sha256 } from '@noble/hashes/sha256';
+import { NINTONDO_ELECTRUM_DEFAULTS } from '../../blue_modules/nintondoNetwork';
 
 const net = require('net');
 const tls = require('tls');
@@ -9,19 +10,17 @@ const tls = require('tls');
 jest.setTimeout(150 * 1000);
 
 const hardcodedPeers = [
-  { host: 'electrum1.bluewallet.io', ssl: '443' },
-  { host: 'electrum2.bluewallet.io', ssl: '443' },
-  { host: 'electrum3.bluewallet.io', ssl: '443' },
-  { host: 'electrum1.bluewallet.io', tcp: '50001' },
-  { host: 'electrum2.bluewallet.io', tcp: '50001' },
-  { host: 'electrum3.bluewallet.io', tcp: '50001' },
+  { host: NINTONDO_ELECTRUM_DEFAULTS.host, ssl: String(NINTONDO_ELECTRUM_DEFAULTS.ssl) },
+  { host: NINTONDO_ELECTRUM_DEFAULTS.host, tcp: String(NINTONDO_ELECTRUM_DEFAULTS.tcp) },
 ];
+
+const describeNetwork = process.env.RUN_ELECTRUM_INTEGRATION === '1' ? describe : describe.skip;
 
 function bitcoinjs_crypto_sha256(buffer /*: Buffer */) /*: Buffer */ {
   return Buffer.from(_sha256(Uint8Array.from(buffer)));
 }
 
-describe('ElectrumClient', () => {
+describeNetwork('ElectrumClient', () => {
   it('can connect and query', async () => {
     for (const peer of hardcodedPeers) {
       const mainClient = new ElectrumClient(net, tls, peer.ssl || peer.tcp, peer.host, peer.ssl ? 'tls' : 'tcp');

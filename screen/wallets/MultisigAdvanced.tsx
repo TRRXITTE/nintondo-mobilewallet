@@ -125,20 +125,7 @@ const FormatSelector: FC<FormatSelectorProps> = ({ format, onFormatChange, color
 
   return (
     <>
-      <ListItem
-        bottomDivider={false}
-        onPress={setFormatP2wsh}
-        title={`${loc.multisig.native_segwit_title} (${MultisigHDWallet.FORMAT_P2WSH})`}
-        checkmark={isP2wsh()}
-        containerStyle={getItemStyle(isP2wsh())}
-      />
-      <ListItem
-        bottomDivider={false}
-        onPress={setFormatP2shP2wsh}
-        title={`${loc.multisig.wrapped_segwit_title} (${MultisigHDWallet.FORMAT_P2SH_P2WSH})`}
-        checkmark={isP2shP2wsh()}
-        containerStyle={getItemStyle(isP2shP2wsh())}
-      />
+      {/* NINTONDO: Only Legacy P2SH multisig supported */}
       <ListItem
         bottomDivider={false}
         onPress={setFormatP2sh}

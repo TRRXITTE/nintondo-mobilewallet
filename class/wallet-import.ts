@@ -137,7 +137,8 @@ const startImport = (
     }
 
     // HD BIP39 wallet password is optinal
-    const hd = new HDSegwitBech32Wallet();
+    // NINTONDO: Changed from HDSegwitBech32Wallet to HDLegacyP2PKHWallet
+    const hd = new HDLegacyP2PKHWallet();
     hd.setSecret(text);
     if (askPassphrase && hd.validateMnemonic()) {
       password = await onPassword(loc.wallets.import_passphrase_title, loc.wallets.import_passphrase_message);
@@ -230,7 +231,8 @@ const startImport = (
 
     // check bip39 wallets
     yield { progress: 'bip39' };
-    const hd2 = new HDSegwitBech32Wallet();
+    // NINTONDO: Changed from HDSegwitBech32Wallet to HDLegacyP2PKHWallet
+    const hd2 = new HDLegacyP2PKHWallet();
     hd2.setSecret(text);
     if (password) {
       hd2.setPassphrase(password);
@@ -316,7 +318,7 @@ const startImport = (
         }
       }
 
-      // if we havent found any wallet for this seed suggest new bech32 wallet
+      // NINTONDO: if we havent found any wallet for this seed suggest new Legacy wallet
       if (!walletFound) {
         yield { wallet: hd2 };
       }
@@ -368,12 +370,9 @@ const startImport = (
         yield { wallet: legacyWallet };
       }
 
-      // if no wallets was ever used, import all of them
+      // NINTONDO: if no wallets was ever used, only import Legacy
       if (!walletFound) {
-        yield { wallet: segwitBech32Wallet };
-        yield { wallet: segwitWallet };
         yield { wallet: legacyWallet };
-        yield { wallet: taprootWallet };
       }
     }
 
@@ -454,12 +453,15 @@ const startImport = (
     s1.setSecret(text);
 
     if (s1.validateMnemonic()) {
+      let slip39WalletFound = false;
+
       yield { progress: 'SLIP39 p2wpkh-p2sh' };
       if (password) {
         s1.setPassphrase(password);
       }
       if (await wasUsed(s1)) {
         yield { wallet: s1 };
+        slip39WalletFound = true;
       }
 
       yield { progress: 'SLIP39 p2pkh' };
@@ -470,6 +472,7 @@ const startImport = (
       s2.setSecret(text);
       if (await wasUsed(s2)) {
         yield { wallet: s2 };
+        slip39WalletFound = true;
       }
 
       yield { progress: 'SLIP39 p2wpkh' };
@@ -478,7 +481,15 @@ const startImport = (
       if (password) {
         s3.setPassphrase(password);
       }
-      yield { wallet: s3 };
+      if (await wasUsed(s3)) {
+        yield { wallet: s3 };
+        slip39WalletFound = true;
+      }
+
+      // NINTONDO: If no SLIP39 wallet was found, default to Legacy
+      if (!slip39WalletFound) {
+        yield { wallet: s2 };
+      }
     }
 
     // is it BC-UR payload with multiple accounts?

@@ -82,7 +82,7 @@ interface CoinpaprikaResponse {
 const RateExtractors = {
   Coinbase: async (ticker: string): Promise<number> => {
     try {
-      const json = (await fetchRate(`https://api.coinbase.com/v2/prices/BTC-${ticker.toUpperCase()}/buy`)) as CoinbaseResponse;
+      const json = (await fetchRate(`https://api.coinbase.com/v2/prices/DOGE-${ticker.toUpperCase()}/buy`)) as CoinbaseResponse;
       const rate = Number(json?.data?.amount);
       if (!(rate >= 0)) throw new Error('Invalid data received');
       return rate;
@@ -95,7 +95,7 @@ const RateExtractors = {
   CoinDesk: async (ticker: string): Promise<number> => {
     try {
       const json = (await fetchRate(
-        `https://min-api.cryptocompare.com/data/price?fsym=BTC&tsyms=${ticker.toUpperCase()}`,
+        `https://min-api.cryptocompare.com/data/price?fsym=DOGE&tsyms=${ticker.toUpperCase()}`,
       )) as CoinDeskResponse;
       const rate = json?.[ticker.toUpperCase()];
       if (!(rate >= 0)) throw new Error('Invalid data received');
@@ -109,9 +109,9 @@ const RateExtractors = {
   CoinGecko: async (ticker: string): Promise<number> => {
     try {
       const json = (await fetchRate(
-        `https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=${ticker.toLowerCase()}`,
+        `https://api.coingecko.com/api/v3/simple/price?ids=dogecoin&vs_currencies=${ticker.toLowerCase()}`,
       )) as CoinGeckoResponse;
-      const rate = Number(json?.bitcoin?.[ticker.toLowerCase()]);
+      const rate = Number(json?.dogecoin?.[ticker.toLowerCase()]);
       if (!(rate >= 0)) throw new Error('Invalid data received');
       return rate;
     } catch (error: any) {
@@ -122,7 +122,7 @@ const RateExtractors = {
 
   Bitstamp: async (ticker: string): Promise<number> => {
     try {
-      const json = (await fetchRate(`https://www.bitstamp.net/api/v2/ticker/btc${ticker.toLowerCase()}`)) as BitstampResponse;
+      const json = (await fetchRate(`https://www.bitstamp.net/api/v2/ticker/doge${ticker.toLowerCase()}`)) as BitstampResponse;
       const rate = Number(json?.last);
       if (!(rate >= 0)) throw new Error('Invalid data received');
       return rate;
@@ -134,8 +134,8 @@ const RateExtractors = {
 
   Kraken: async (ticker: string): Promise<number> => {
     try {
-      const json = (await fetchRate(`https://api.kraken.com/0/public/Ticker?pair=XXBTZ${ticker.toUpperCase()}`)) as KrakenResponse;
-      const rate = Number(json?.result?.[`XXBTZ${ticker.toUpperCase()}`]?.c?.[0]);
+      const json = (await fetchRate(`https://api.kraken.com/0/public/Ticker?pair=XDOGZ${ticker.toUpperCase()}`)) as KrakenResponse;
+      const rate = Number(json?.result?.[`XDOGZ${ticker.toUpperCase()}`]?.c?.[0]);
       if (!(rate >= 0)) throw new Error('Invalid data received');
       return rate;
     } catch (error: any) {
@@ -177,7 +177,7 @@ const RateExtractors = {
 
   YadioConvert: async (ticker: string): Promise<number> => {
     try {
-      const json = (await fetchRate(`https://api.yadio.io/convert/1/BTC/${ticker}`)) as YadioConvertResponse;
+      const json = (await fetchRate(`https://api.yadio.io/convert/1/DOGE/${ticker}`)) as YadioConvertResponse;
       const rate = Number(json?.rate);
       if (!(rate >= 0)) throw new Error('Invalid data received');
       return rate;
@@ -189,7 +189,7 @@ const RateExtractors = {
 
   Exir: async (ticker: string): Promise<number> => {
     try {
-      const json = (await fetchRate('https://api.exir.io/v1/ticker?symbol=btc-irt')) as ExirResponse;
+      const json = (await fetchRate('https://api.exir.io/v1/ticker?symbol=doge-irt')) as ExirResponse;
       const rate = Number(json?.last);
       if (!(rate >= 0)) throw new Error('Invalid data received');
       return rate;
@@ -201,7 +201,7 @@ const RateExtractors = {
 
   coinpaprika: async (ticker: string): Promise<number> => {
     try {
-      const json = (await fetchRate('https://api.coinpaprika.com/v1/tickers/btc-bitcoin?quotes=INR')) as CoinpaprikaResponse;
+      const json = (await fetchRate('https://api.coinpaprika.com/v1/tickers/doge-dogecoin?quotes=INR')) as CoinpaprikaResponse;
       const rate = Number(json?.quotes?.INR?.price);
       if (!(rate >= 0)) throw new Error('Invalid data received');
       return rate;

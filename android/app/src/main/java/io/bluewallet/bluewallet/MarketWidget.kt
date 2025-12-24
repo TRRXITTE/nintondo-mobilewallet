@@ -24,10 +24,11 @@ class MarketWidget : AppWidgetProvider() {
         private const val KEY_LAST_ONLINE_STATUS = "market_widget_last_online_status"
 
         private val hardcodedPeers = listOf(
-            ElectrumServer("mainnet.foundationdevices.com", 50002, true),
-            ElectrumServer("electrum1.bluewallet.io", 443, true),
-            ElectrumServer("electrum.acinq.co", 50002, true),
-            ElectrumServer("electrum.bitaroo.net", 50002, true)
+            ElectrumServer("x.cdns.trrxitte.com", 50002, true),
+            ElectrumServer("en.nintondo.trrxitte.com", 50002, true),
+            ElectrumServer("eu.nintondo.trrxitte.com", 50002, true),
+            ElectrumServer("us.nintondo.trrxitte.com", 50002, true),
+            ElectrumServer("127.0.0.1", 50002, true)
         )
 
         private suspend fun connectToElectrumServer(): Boolean {

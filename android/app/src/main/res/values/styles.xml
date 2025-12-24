@@ -7,6 +7,8 @@
         <item name="android:statusBarColor">@android:color/transparent</item>
         <!-- Status bar text color - dark content for light theme -->
         <item name="android:windowLightStatusBar">true</item>
+        <!-- App icon background color -->
+        <item name="android:colorBackground">@color/icon_background</item>
     </style>
     
     <!-- Widget text styles -->

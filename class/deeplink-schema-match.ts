@@ -24,6 +24,7 @@ class DeeplinkSchemaMatch {
     const lowercaseString = schemaString.trim().toLowerCase();
     return (
       lowercaseString.startsWith('bitcoin:') ||
+      lowercaseString.startsWith('nintondo:') ||
       lowercaseString.startsWith('lightning:') ||
       lowercaseString.startsWith('blue:') ||
       lowercaseString.startsWith('bluewallet:') ||
@@ -236,7 +237,7 @@ class DeeplinkSchemaMatch {
   }
 
   /**
-   * Extracts server from a deeplink like `bluewallet:setelectrumserver?server=electrum1.bluewallet.io%3A443%3As`
+   * Extracts server from a deeplink like `bluewallet:setelectrumserver?server=electrum.nintondo.org%3A50002%3As`
    * returns FALSE if none found
    *
    * @param url {string}
@@ -302,7 +303,7 @@ class DeeplinkSchemaMatch {
   }
 
   static isBitcoinAddress(address: string): boolean {
-    address = address.replace('://', ':').replace('bitcoin:', '').replace('BITCOIN:', '').replace('bitcoin=', '').split('?')[0];
+    address = address.replace('://', ':').replace('bitcoin:', '').replace('BITCOIN:', '').replace('bitcoin=', '').replace('nintondo:', '').replace('NINTONDO:', '').replace('nintondo=', '').split('?')[0];
     let isValidBitcoinAddress = false;
     try {
       bitcoin.address.toOutputScript(address);
@@ -388,7 +389,7 @@ class DeeplinkSchemaMatch {
       throw new Error('No URI provided');
     }
     let replacedUri = uri;
-    for (const replaceMe of ['BITCOIN://', 'bitcoin://', 'BITCOIN:']) {
+    for (const replaceMe of ['BITCOIN://', 'bitcoin://', 'BITCOIN:', 'NINTONDO://', 'nintondo://', 'NINTONDO:']) {
       replacedUri = replacedUri.replace(replaceMe, 'bitcoin:');
     }
 

@@ -1,6 +1,13 @@
 import assert from 'assert';
 
 import * as BlueElectrum from '../../blue_modules/BlueElectrum';
+import { NINTONDO_ELECTRUM_DEFAULTS } from '../../blue_modules/nintondoNetwork';
+
+const shouldRunElectrumIntegration = process.env.RUN_ELECTRUM_INTEGRATION === '1';
+const itNetwork = shouldRunElectrumIntegration ? it : it.skip;
+const integrationHost = NINTONDO_ELECTRUM_DEFAULTS.host;
+const integrationTcpPort = NINTONDO_ELECTRUM_DEFAULTS.tcp;
+const integrationSslPort = NINTONDO_ELECTRUM_DEFAULTS.ssl;
 
 jest.setTimeout(150 * 1000);
 
@@ -90,9 +97,9 @@ describe('BlueElectrum', () => {
     );
   });
 
-  it('ElectrumClient can test connection', async () => {
-    assert.ok(!(await BlueElectrum.testConnection('electrum1.bluewallet.io', 444, false)));
-    assert.ok(!(await BlueElectrum.testConnection('electrum1.bluewallet.io', false, 444)));
+  itNetwork('ElectrumClient can test connection', async () => {
+    assert.ok(!(await BlueElectrum.testConnection(integrationHost, 444, false)));
+    assert.ok(!(await BlueElectrum.testConnection(integrationHost, false, 444)));
     assert.ok(!(await BlueElectrum.testConnection('ya.ru', 444, false)));
     assert.ok(!(await BlueElectrum.testConnection('google.com', false, 80)));
     assert.ok(!(await BlueElectrum.testConnection('google.com', 80, false)));
@@ -103,11 +110,11 @@ describe('BlueElectrum', () => {
     assert.ok(!(await BlueElectrum.testConnection('joyreactor.cc', 80, false)));
     assert.ok(!(await BlueElectrum.testConnection('joyreactor.cc', false, 80)));
 
-    assert.ok(await BlueElectrum.testConnection('electrum1.bluewallet.io', '50001'));
-    assert.ok(await BlueElectrum.testConnection('electrum1.bluewallet.io', false, 443));
+    assert.ok(await BlueElectrum.testConnection(integrationHost, String(integrationTcpPort)));
+    assert.ok(await BlueElectrum.testConnection(integrationHost, false, integrationSslPort));
   });
 
-  it('ElectrumClient can estimate fees', async () => {
+  itNetwork('ElectrumClient can estimate fees', async () => {
     assert.ok((await BlueElectrum.estimateFee(1)) >= 1);
     const fees = await BlueElectrum.estimateFees();
     assert.ok(fees.fast > 0);
@@ -115,7 +122,7 @@ describe('BlueElectrum', () => {
     assert.ok(fees.slow > 0);
   });
 
-  it('ElectrumClient can request server features', async () => {
+  itNetwork('ElectrumClient can request server features', async () => {
     const features = await BlueElectrum.serverFeatures();
     // console.warn({features});
     assert.ok(features.server_version);
@@ -123,7 +130,7 @@ describe('BlueElectrum', () => {
     assert.ok(features.protocol_max);
   });
 
-  it('BlueElectrum can do getBalanceByAddress()', async function () {
+  itNetwork('BlueElectrum can do getBalanceByAddress()', async function () {
     const address = '3GCvDBAktgQQtsbN6x5DYiQCMmgZ9Yk8BK';
     const balance = await BlueElectrum.getBalanceByAddress(address);
     assert.strictEqual(balance.confirmed, 51432);
@@ -131,7 +138,7 @@ describe('BlueElectrum', () => {
     assert.strictEqual(balance.addr, address);
   });
 
-  it('BlueElectrum can do getTransactionsByAddress()', async function () {
+  itNetwork('BlueElectrum can do getTransactionsByAddress()', async function () {
     const txs = await BlueElectrum.getTransactionsByAddress('bc1qt4t9xl2gmjvxgmp5gev6m8e6s9c85979ta7jeh');
     assert.strictEqual(txs.length, 1);
     assert.strictEqual(txs[0].tx_hash, 'ad00a92409d8982a1d7f877056dbed0c4337d2ebab70b30463e2802279fb936d');
@@ -150,7 +157,7 @@ describe('BlueElectrum', () => {
     assert.ok(rez[txs[0].tx_hash]);
   });
 
-  it('BlueElectrum can do getTransactionsFullByAddress()', async function () {
+  itNetwork('BlueElectrum can do getTransactionsFullByAddress()', async function () {
     const txs = await BlueElectrum.getTransactionsFullByAddress('bc1qt4t9xl2gmjvxgmp5gev6m8e6s9c85979ta7jeh');
     for (const tx of txs) {
       assert.ok(tx.address === 'bc1qt4t9xl2gmjvxgmp5gev6m8e6s9c85979ta7jeh');
@@ -169,14 +176,14 @@ describe('BlueElectrum', () => {
     }
   });
 
-  it('BlueElectrum can do txhexToElectrumTransaction()', () => {
+  itNetwork('BlueElectrum can do txhexToElectrumTransaction()', () => {
     const tx =
       '0200000000010137d07edbc9db9a072a79c6f03e7274e52642d64d760143adc64832501087f37b00000000000000008002102700000000000022512040ef293a8a0ebaf8b351a27d89ff4b5b3822a635e4afdca77a30170c363bafa3e4ad0b00000000001600147dfe2249fa56a2f2b4b7ed3b16ee55e7c565198002483045022100e5b9f1c12e133ef659a0e5cc417b1f8625ba9e951bc7083408de2a33d6fb1a84022035ebb1e2d4ab620ee178dc6cd0b58c54123d1526d9a1b3efba612ea80e48edd101210295b56fc62cdd09c200ce19f873d5ddb3074f7141b2533448829385f48f093a1600000000';
     const decoded = BlueElectrum.txhexToElectrumTransaction(tx);
     assert.strictEqual(decoded.vout[0].scriptPubKey.addresses[0], 'bc1pgrhjjw52p6a03v635f7cnl6ttvuz9f34ujhaefm6xqtscd3m473szkl92g');
   });
 
-  it.each([false, true])('BlueElectrum can do multiGetBalanceByAddress(), disableBatching=%p', async function (diableBatching) {
+  itNetwork.each([false, true])('BlueElectrum can do multiGetBalanceByAddress(), disableBatching=%p', async function (diableBatching) {
     if (diableBatching) BlueElectrum.setBatchingDisabled();
     const balances = await BlueElectrum.multiGetBalanceByAddress([
       'bc1qt4t9xl2gmjvxgmp5gev6m8e6s9c85979ta7jeh',

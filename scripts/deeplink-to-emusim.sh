@@ -9,7 +9,7 @@ deepLinks=(
   "bluewallet:lightning:lnbc10u1pwjqwkkpp5vlc3tttdzhpk9fwzkkue0sf2pumtza7qyw9vucxyyeh0yaqq66yqdq5f38z6mmwd3ujqar9wd6qcqzpgxq97zvuqrzjqvgptfurj3528snx6e3dtwepafxw5fpzdymw9pj20jj09sunnqmwqz9hx5qqtmgqqqqqqqlgqqqqqqgqjq5duu3fs9xq9vn89qk3ezwpygecu4p3n69wm3tnl28rpgn2gmk5hjaznemw0gy32wrslpn3g24khcgnpua9q04fttm2y8pnhmhhc2gncplz0zde"
   "https://azte.co/?c1=3062&c2=2586&c3=5053&c4=5261"
   "https://azte.co/redeem?code=1111222233334444"
-  "bluewallet:setelectrumserver?server=electrum1.bluewallet.io%3A443%3As"
+  "bluewallet:setelectrumserver?server=x.cdns.trrxitte.com%3A50002%3As"
   "bluewallet:setlndhuburl?url=https%3A%2F%2Flndhub.herokuapp.com"
   "lnaddress@zbd.gg"
   "zpub6rFDtF1nuXZ9PUL4XzKURh3vJBW6Kj6TUrYL4qPtFNtDXtcTVfiqjQDyrZNwjwzt5HS14qdqo3Co2282Lv3Re6Y5wFZxAVuMEpeygnnDwfx"

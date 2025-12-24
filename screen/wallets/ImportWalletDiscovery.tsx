@@ -3,7 +3,7 @@ import { RouteProp, useRoute } from '@react-navigation/native';
 import { ActivityIndicator, FlatList, LayoutAnimation, Platform, StyleSheet, UIManager, View } from 'react-native';
 import triggerHapticFeedback, { HapticFeedbackTypes } from '../../blue_modules/hapticFeedback';
 import { BlueButtonLink, BlueFormLabel, BlueText } from '../../BlueComponents';
-import { HDSegwitBech32Wallet, WatchOnlyWallet } from '../../class';
+import { HDLegacyP2PKHWallet, WatchOnlyWallet } from '../../class'; // NINTONDO: Changed from HDSegwitBech32Wallet
 import startImport, { TImport } from '../../class/wallet-import';
 import presentAlert from '../../components/Alert';
 import Button from '../../components/Button';
@@ -50,7 +50,8 @@ const ImportWalletDiscovery: React.FC = () => {
   const [progress, setProgress] = useState<string | undefined>();
   const importing = useRef<boolean>(false);
   const bip39 = useMemo(() => {
-    const hd = new HDSegwitBech32Wallet();
+    // NINTONDO: Changed from HDSegwitBech32Wallet to HDLegacyP2PKHWallet
+    const hd = new HDLegacyP2PKHWallet();
     hd.setSecret(importText);
     return hd.validateMnemonic();
   }, [importText]);

@@ -54,7 +54,7 @@ const WalletsAddMultisig: React.FC = () => {
   const [state, dispatch] = useReducer(multisigReducer, {
     m: 2,
     n: 3,
-    format: MultisigHDWallet.FORMAT_P2WSH,
+    format: MultisigHDWallet.FORMAT_P2SH, // NINTONDO: Legacy P2SH only
   });
 
   const stylesHook = StyleSheet.create({

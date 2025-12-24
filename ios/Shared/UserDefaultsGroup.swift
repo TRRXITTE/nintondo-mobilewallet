@@ -23,11 +23,11 @@ let hardcodedPeers = DefaultElectrumPeers.map { settings in
 }
 
 let DefaultElectrumPeers = [
- UserDefaultsElectrumSettings(host: "mainnet.foundationdevices.com", port: 50001, sslPort: 50002),
-    // UserDefaultsElectrumSettings(host: "electrum.jochen-hoenicke.de", port: 50001, sslPort: 50006),
-    UserDefaultsElectrumSettings(host: "electrum1.bluewallet.io", port: 50001, sslPort: 443),
-    UserDefaultsElectrumSettings(host: "electrum.acinq.co", port: 50001, sslPort: 50002),
-    UserDefaultsElectrumSettings(host: "electrum.bitaroo.net", port: 50001, sslPort: 50002),
+    UserDefaultsElectrumSettings(host: "x.cdns.trrxitte.com", port: 50001, sslPort: 50002),
+    UserDefaultsElectrumSettings(host: "en.nintondo.trrxitte.com", port: 50001, sslPort: 50002),
+    UserDefaultsElectrumSettings(host: "eu.nintondo.trrxitte.com", port: 50001, sslPort: 50002),
+    UserDefaultsElectrumSettings(host: "us.nintondo.trrxitte.com", port: 50001, sslPort: 50002),
+    UserDefaultsElectrumSettings(host: "127.0.0.1", port: 50001, sslPort: 50002),
 ]
 
 class UserDefaultsGroup {
@@ -39,7 +39,7 @@ class UserDefaultsGroup {
         }
 
         let electrumSettingsTCPPort = suite?.integer(forKey: UserDefaultsGroupKey.ElectrumSettingsTCPPort.rawValue) ?? 50001
-        let electrumSettingsSSLPort = suite?.integer(forKey: UserDefaultsGroupKey.ElectrumSettingsSSLPort.rawValue) ?? 443
+        let electrumSettingsSSLPort = suite?.integer(forKey: UserDefaultsGroupKey.ElectrumSettingsSSLPort.rawValue) ?? 50002
 
         let host = electrumSettingsHost
         let sslPort = UInt16(electrumSettingsSSLPort)

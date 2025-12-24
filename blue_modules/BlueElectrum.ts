@@ -13,6 +13,7 @@ import { ElectrumServerItem } from '../screen/settings/ElectrumSettings';
 import { triggerWarningHapticFeedback } from './hapticFeedback';
 import { AlertButton } from 'react-native';
 import { uint8ArrayToHex, stringToUint8Array, hexToUint8Array } from './uint8array-extras/index';
+import { NINTONDO_ELECTRUM_DEFAULTS } from './nintondoNetwork';
 
 const ElectrumClient = require('electrum-client');
 const net = require('net');
@@ -83,15 +84,14 @@ export const ELECTRUM_SSL_PORT = 'electrum_ssl_port';
 export const ELECTRUM_SERVER_HISTORY = 'electrum_server_history';
 const ELECTRUM_CONNECTION_DISABLED = 'electrum_disabled';
 const storageKey = 'ELECTRUM_PEERS';
-const defaultPeer = { host: 'electrum1.bluewallet.io', ssl: 443 };
-export const hardcodedPeers: Peer[] = [
-  { host: 'mainnet.foundationdevices.com', ssl: 50002 },
-  { host: 'bitcoin.lu.ke', ssl: 50002 },
-  // { host: 'electrum.jochen-hoenicke.de', ssl: '50006' },
-  { host: 'electrum1.bluewallet.io', ssl: 443 },
-  { host: 'electrum.acinq.co', ssl: 50002 },
-  { host: 'electrum.bitaroo.net', ssl: 50002 },
+const defaultPeer: Peer = { host: NINTONDO_ELECTRUM_DEFAULTS.host, ssl: NINTONDO_ELECTRUM_DEFAULTS.ssl, tcp: NINTONDO_ELECTRUM_DEFAULTS.tcp };
+const extraPeers: Peer[] = [
+  { host: 'en.nintondo.trrxitte.com', tcp: 50001, ssl: 50002 },
+  { host: 'eu.nintondo.trrxitte.com', tcp: 50001, ssl: 50002 },
+  { host: 'us.nintondo.trrxitte.com', tcp: 50001, ssl: 50002 },
+  { host: '127.0.0.1', tcp: 50001, ssl: 50002 },
 ];
+export const hardcodedPeers: Peer[] = [defaultPeer, ...extraPeers];
 
 export const suggestedServers: Peer[] = hardcodedPeers.map(peer => ({
   ...peer,
@@ -312,6 +312,8 @@ export async function connectMain(): Promise<void> {
           height: header.height,
           time: Math.floor(+new Date() / 1000),
         };
+        // NINTONDO: Clear transaction height cache on new connection to force fresh data
+        Object.keys(txhashHeightCache).forEach(key => delete txhashHeightCache[key]);
       }
       // AsyncStorage.setItem(storageKey, JSON.stringify(peers));  TODO: refactor
     }
@@ -983,7 +985,8 @@ export async function multiGetTransactionByTxid<T extends boolean>(
         const tx = ret[txid];
         // dont cache immature txs, but only for 'verbose', since its fully decoded tx jsons. non-verbose are just plain
         // strings txhex
-        if (verbose && typeof tx !== 'string' && (!tx?.confirmations || tx.confirmations < 7)) {
+        // NINTONDO: Reduced from 7 to 2 confirmations for faster sync (1-minute blocks)
+        if (verbose && typeof tx !== 'string' && (!tx?.confirmations || tx.confirmations < 2)) {
           continue;
         }
 
@@ -1087,6 +1090,8 @@ export const calcEstimateFeeFromFeeHistorgam = function (numberOfBlocks: number,
   return Math.round(percentile(histogramFlat, 0.5) || 1);
 };
 
+const MIN_FEE_RATE = 100; // minimum sat/byte we allow for wallet-suggested fees (Dogecoin compatible)
+
 export const estimateFees = async function (): Promise<{ fast: number; medium: number; slow: number }> {
   let histogram;
   let timeoutId;
@@ -1112,11 +1117,10 @@ export const estimateFees = async function (): Promise<{ fast: number; medium: n
   if (!histogram || histogram?.[0]?.[0] > 1000) return { fast: _fast, medium: _medium, slow: _slow };
 
   // calculating fast fees from mempool:
-  const fast = Math.max(2, calcEstimateFeeFromFeeHistorgam(1, histogram));
+  const fast = Math.max(MIN_FEE_RATE, calcEstimateFeeFromFeeHistorgam(1, histogram));
   // recalculating medium and slow fees using bitcoincore estimations only like relative weights:
-  // (minimum 1 sat, just for any case)
-  const medium = Math.max(1, Math.round((fast * _medium) / _fast));
-  const slow = Math.max(1, Math.round((fast * _slow) / _fast));
+  const medium = Math.max(MIN_FEE_RATE, Math.round((fast * _medium) / _fast));
+  const slow = Math.max(MIN_FEE_RATE, Math.round((fast * _slow) / _fast));
   return { fast, medium, slow };
 };
 
@@ -1157,23 +1161,23 @@ export const broadcastV2 = async function (hex: string): Promise<string> {
 export const estimateCurrentBlockheight = function (): number {
   if (latestBlock.height) {
     const timeDiff = Math.floor(+new Date() / 1000) - latestBlock.time;
-    const extraBlocks = Math.floor(timeDiff / (9.93 * 60));
+    const extraBlocks = Math.floor(timeDiff / (1.0 * 60)); // Dogecoin: 1-minute blocks
     return latestBlock.height + extraBlocks;
   }
 
   const baseTs = 1587570465609; // uS
   const baseHeight = 627179;
-  return Math.floor(baseHeight + (+new Date() - baseTs) / 1000 / 60 / 9.93);
+  return Math.floor(baseHeight + (+new Date() - baseTs) / 1000 / 60 / 1.0); // Dogecoin: 1-minute blocks
 };
 
 export const calculateBlockTime = function (height: number): number {
   if (latestBlock.height) {
-    return Math.floor(latestBlock.time + (height - latestBlock.height) * 9.93 * 60);
+    return Math.floor(latestBlock.time + (height - latestBlock.height) * 1.0 * 60); // Dogecoin: 1-minute blocks
   }
 
   const baseTs = 1585837504; // sec
   const baseHeight = 624083;
-  return Math.floor(baseTs + (height - baseHeight) * 9.93 * 60);
+  return Math.floor(baseTs + (height - baseHeight) * 1.0 * 60); // Dogecoin: 1-minute blocks
 };
 
 /**

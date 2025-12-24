@@ -201,12 +201,12 @@ describe.each(['', '//'])('unit - DeepLinkSchemaMatch', function (suffix) {
       },
       {
         argument: {
-          url: 'bluewallet:setelectrumserver?server=electrum1.bluewallet.io%3A443%3As',
+          url: 'bluewallet:setelectrumserver?server=x.cdns.trrxitte.com%3A50002%3As',
         },
         expected: [
           'ElectrumSettings',
           {
-            server: 'electrum1.bluewallet.io:443:s',
+            server: 'x.cdns.trrxitte.com:50002:s',
           },
         ],
       },
@@ -424,19 +424,19 @@ describe.each(['', '//'])('unit - DeepLinkSchemaMatch', function (suffix) {
   it('can work with some deeplink actions', () => {
     assert.strictEqual(DeeplinkSchemaMatch.getServerFromSetElectrumServerAction('sgasdgasdgasd'), false);
     assert.strictEqual(
-      DeeplinkSchemaMatch.getServerFromSetElectrumServerAction('bluewallet:setelectrumserver?server=electrum1.bluewallet.io%3A443%3As'),
-      'electrum1.bluewallet.io:443:s',
+      DeeplinkSchemaMatch.getServerFromSetElectrumServerAction('bluewallet:setelectrumserver?server=x.cdns.trrxitte.com%3A50002%3As'),
+      'x.cdns.trrxitte.com:50002:s',
     );
     assert.strictEqual(
-      DeeplinkSchemaMatch.getServerFromSetElectrumServerAction('setelectrumserver?server=electrum1.bluewallet.io%3A443%3As'),
-      'electrum1.bluewallet.io:443:s',
+      DeeplinkSchemaMatch.getServerFromSetElectrumServerAction('setelectrumserver?server=x.cdns.trrxitte.com%3A50002%3As'),
+      'x.cdns.trrxitte.com:50002:s',
     );
     assert.strictEqual(
-      DeeplinkSchemaMatch.getServerFromSetElectrumServerAction('ololo:setelectrumserver?server=electrum1.bluewallet.io%3A443%3As'),
+      DeeplinkSchemaMatch.getServerFromSetElectrumServerAction('ololo:setelectrumserver?server=x.cdns.trrxitte.com%3A50002%3As'),
       false,
     );
     assert.strictEqual(
-      DeeplinkSchemaMatch.getServerFromSetElectrumServerAction('setTrololo?server=electrum1.bluewallet.io%3A443%3As'),
+      DeeplinkSchemaMatch.getServerFromSetElectrumServerAction('setTrololo?server=x.cdns.trrxitte.com%3A50002%3As'),
       false,
     );
 
