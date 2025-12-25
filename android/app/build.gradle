@@ -86,8 +86,8 @@ android {
         applicationId "io.nintondo.osx"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 3
-        versionName "0.100.02"
+        versionCode 4
+        versionName "0.100.03"
         testBuildType System.getProperty('testBuildType', 'debug')
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }

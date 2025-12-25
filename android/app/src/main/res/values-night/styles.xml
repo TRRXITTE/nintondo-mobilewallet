@@ -5,7 +5,7 @@
         <item name="android:windowLightStatusBar">false</item>
         <!-- App icon background color -->
         <item name="android:colorBackground">@color/icon_background</item>
-        <!-- Centered splash screen -->
+        <!-- Splash screen with icon -->
         <item name="android:windowBackground">@drawable/background_splash</item>
     </style>
 
